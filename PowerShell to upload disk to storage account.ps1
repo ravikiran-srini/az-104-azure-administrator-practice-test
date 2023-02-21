@@ -1,0 +1,1 @@
+Add-AzVhd -ResourceGroupName "rg-dev-03" -Destination "https://strdev011.blob.core.windows.net/vhdstore/newvhd.vhd" -LocalFilePath "D:\VHD\virtualharddisk.vhd"
