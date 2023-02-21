@@ -1,4 +1,0 @@
-for (;;)
-{
-Echo "Looping"
-}
