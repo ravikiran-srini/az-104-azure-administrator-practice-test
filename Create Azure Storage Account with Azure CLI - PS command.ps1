@@ -1,0 +1,1 @@
+﻿az storage account create --resource-group rg-dev-03 --name strdev014 --sku Standard_GRS --kind StorageV2 --access-tier Cool
