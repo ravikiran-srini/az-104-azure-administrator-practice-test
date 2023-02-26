@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string",
+      "defaultValue": "vm01"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "East US"
+    },
+    "domainFQDN": {
+      "type": "string",
+      "defaultValue": "ravikirans171.onmicrosoft.com"
+    },
+    "domainJoinUserPassword": {
+      "type": "securestring"
+    },
+    "domainJoinOptions": {
+      "defaultValue": 3,
+      "type": "int"
+    },
+    "domainUsername": {
+      "type": "string",
+      "defaultValue": "ravikiransrinivasulu@ravikirans171.onmicrosoft.com" //ravikirans171.onmicrosoft.com/ravikiransrinivasulu, ravikirans171.onmicrosoft.com//ravikiransrinivasulu,
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmName'),'/domainjoin')]", //"domainjoin",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "JsonADDomainExtension",
+        "typeHandlerVersion": "1.3",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "Name": "[parameters('domainFQDN')]",
+          "User": "[parameters('domainUsername')]",
+          "Options": "[parameters('domainJoinOptions')]",
+          "Restart": "true"
+        },
+        "protectedSettings": {
+          "Password": "[parameters('domainJoinUserPassword')]"
+        }
+      }
+    }
+  ]
+  }
