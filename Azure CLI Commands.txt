@@ -1,0 +1,4 @@
+az aks nodepool scale --cluster-name cluster01 --name nodepool2 --resource-group rg-dev-01
+az aks scale --name cluster01 --node-count 3 --resource-group rg-dev-01
+kubectl scale --replicas=3 deployment/app-frontend
+kubectl autoscale deployment app-frontend --cpu-percent=50 --min=3 --max=5
