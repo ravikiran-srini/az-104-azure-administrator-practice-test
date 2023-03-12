@@ -1,0 +1,29 @@
+az aks get-upgrades --resource-group rg-dev-01 --name kluster01 --output table
+
+
+--updates only the properties, incorrect
+az aks nodepool update -n agentpool -g rg-dev-01 --cluster-name kluster01 --max-surge 3
+
+
+--upgrades the kube cluster (with a default surge value of 1), incorrect
+az aks upgrade \
+    --resource-group rg-dev-01 \
+    --name kluster01 \
+    --kubernetes-version 1.25.4
+
+
+--tries to upgrades only the node pool, without upgrading cluster -> so error.
+az aks nodepool upgrade \
+    --resource-group rg-dev-01 \
+    --cluster-name kluster01 \
+    --name agentpool \
+    --kubernetes-version 1.25.4 \
+    --max-surge 2
+
+
+--[Correct] Updates the nodepool properties and then upgrades the kube version of the node pool.
+az aks nodepool update -n agentpool -g rg-dev-01 --cluster-name kluster01 --max-surge 3
+az aks upgrade \
+    --resource-group rg-dev-01 \
+    --name kluster01 \
+    --kubernetes-version 1.25.4
