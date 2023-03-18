@@ -1,0 +1,24 @@
+az aks create \
+    --generate-ssh-keys \
+    --resource-group rg-dev-01 \
+    --location 'West US' \
+    --name aks-two \
+    --network-plugin kubenet \
+    --service-cidr 10.1.0.0/16 \
+    --dns-service-ip 10.1.0.10 \
+    --node-count 1 \
+    --docker-bridge-address 172.17.0.1/16 \
+    --vnet-subnet-id /subscriptions/8b7acd27-b278-4b42-8205-4e1ff17bfa74/resourceGroups/rg-dev-02/providers/Microsoft.Network/virtualNetworks/vnet2/subnets/default
+
+
+--the below command produces error.
+az aks create \
+    --generate-ssh-keys \
+    --resource-group rg-dev-01 \
+    --name aks-two \
+    --network-plugin kubenet \
+    --service-cidr 10.1.0.0/16 \
+    --dns-service-ip 10.1.0.10 \
+    --node-count 1 \
+    --docker-bridge-address 172.17.0.1/16 \
+    --vnet-subnet-id /subscriptions/8b7acd27-b278-4b42-8205-4e1ff17bfa74/resourceGroups/rg-dev-02/providers/Microsoft.Network/virtualNetworks/vnet2/subnets/default
