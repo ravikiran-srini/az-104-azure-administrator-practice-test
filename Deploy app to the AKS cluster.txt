@@ -1,5 +1,0 @@
-kubectl get nodes
-
-az aks get-credentials --resource-group rg-dev-01 --name cluster01
-
-kubectl apply -f aks-app.yaml
