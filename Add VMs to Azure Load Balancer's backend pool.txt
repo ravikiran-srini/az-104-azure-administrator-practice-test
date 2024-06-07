@@ -1,0 +1,22 @@
+# ENSURE RESOURCE GROUP EXISTS IN AZURE
+$resourceGroup = "rg-dev-01"
+$username="azureuser"
+
+
+#CREATE SUBNET AND VNET
+az network vnet create --name vnet01 --resource-group $resourceGroup --address-prefix 10.0.0.0/16 --subnet-name backend-subnet --subnet-prefixes 10.0.0.0/24 --l "East US"
+az network vnet create --name vnet02 --resource-group $resourceGroup --address-prefix 10.0.0.0/16 --subnet-name backend-subnet --subnet-prefixes 10.0.0.0/24 --l "East US"
+
+
+
+# CREATE LOAD BALANCER RESOURCES
+az network public-ip create --resource-group $resourceGroup --name lb-ip --sku Standard --location "East US"
+az network lb create --resource-group $resourceGroup --name lb01 --sku Standard --public-ip-address lb-ip --frontend-ip-name frontend01 --backend-pool-name backendpool01
+
+
+# CREATE 4 AZURE VMS IN DIFFERENT AZ
+
+az vm create --resource-group $resourcegroup --name vm01 --image Win2022AzureEditionCore --admin-username $username --public-ip-address '""' --vnet-name vnet01 --subnet backend-subnet --zone 1
+az vm create --resource-group $resourcegroup --name vm02 --image Win2022Datacenter --admin-username $username --public-ip-address '""' --vnet-name vnet02 --subnet backend-subnet --zone 2
+az vm create --resource-group $resourcegroup --name vm03 --image CentOS85Gen2 --admin-username $username --public-ip-address '""' --vnet-name vnet01 --subnet backend-subnet --zone 2
+az vm create --resource-group $resourcegroup --name vm04 --image Ubuntu2204 --admin-username $username --public-ip-address '""' --vnet-name vnet02 --subnet backend-subnet --zone 1
