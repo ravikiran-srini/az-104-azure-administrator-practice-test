@@ -16,3 +16,23 @@ az vm create --resource-group $resourcegroup --name vm01 --image Win2022Datacent
 az vm create --resource-group $resourcegroup --name vm02 --image Win2022Datacenter --admin-username $username --public-ip-address '""' --vnet-name vnet01 --subnet backend-subnet
 
 
+# INSTALL WEB SERVERS IN THE 2 VMS
+az vm run-command invoke -g $resourcegroup -n vm01 --command-id RunPowerShellScript --scripts "Install-WindowsFeature -name Web-Server -IncludeManagementTools"
+az vm run-command invoke -g $resourcegroup -n vm02 --command-id RunPowerShellScript --scripts "Install-WindowsFeature -name Web-Server -IncludeManagementTools"
+
+
+# OPEN PORTS FOR WEB SERVER
+az vm open-port --port 80 --resource-group $resourcegroup --name vm01
+az vm open-port --port 80 --resource-group $resourcegroup --name vm02
+
+
+# REMOVE & ADD A NEW HTM FILE THAT DISPLAYS SERVER NAME
+az vm run-command invoke -g $resourcegroup -n vm01 --command-id RunPowerShellScript --scripts "Remove-Item  C:\inetpub\wwwroot\iisstart.htm"
+az vm run-command invoke -g $resourcegroup -n vm01 --command-id RunPowerShellScript --scripts "Add-Content -Path "C:\inetpub\wwwroot\iisstart.htm" -Value $("Hello World from " + $env:computername)"
+az vm run-command invoke -g $resourcegroup -n vm02 --command-id RunPowerShellScript --scripts "Remove-Item  C:\inetpub\wwwroot\iisstart.htm"
+az vm run-command invoke -g $resourcegroup -n vm02 --command-id RunPowerShellScript --scripts "Add-Content -Path "C:\inetpub\wwwroot\iisstart.htm" -Value $("Hello World from " + $env:computername)"
+
+
+# ADD VMS TO THE BACKEND POOL
+az network nic ip-config address-pool add --address-pool backendpool01 --ip-config-name ipconfigvm01 --nic-name vm01VMNic --resource-group $resourceGroup --lb-name lb01
+az network nic ip-config address-pool add --address-pool backendpool01 --ip-config-name ipconfigvm02 --nic-name vm02VMNic --resource-group $resourceGroup --lb-name lb01
