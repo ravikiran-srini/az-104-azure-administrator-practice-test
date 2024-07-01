@@ -1,0 +1,29 @@
+$resourceGroup = 'rg-dev-01'
+$random = (New-Guid).ToString().Substring(0,6)
+$webappname = 'webapp' + $random
+
+
+# Create a Resource Group
+az group create --name $resourceGroup --location eastus
+
+
+# Create a VNet with 2 subnets
+az network vnet create --name vnet01 --resource-group $resourceGroup --address-prefix 10.0.0.0/16 --subnet-name AzureFirewallSubnet --subnet-prefix 10.0.0.0/26 --location eastus
+az network vnet subnet create -g $resourceGroup --vnet-name vnet01 -n subnet01 --address-prefixes 10.0.1.0/24
+
+
+# Deploy Azure Firewall and an application rule
+az network firewall create --name firewall01 --resource-group $resourceGroup --location eastus --vnet-name vnet01
+az network public-ip create --name fw-pip --resource-group $resourceGroup --location eastus --allocation-method static --sku standard
+az network firewall ip-config create --firewall-name firewall01 --name FW-config --public-ip-address fw-pip --resource-group $resourceGroup --vnet-name vnet01
+az network firewall application-rule create --collection-name allow-sites --firewall-name firewall01 --name allow-site --protocols Http=80 Https=443 --resource-group $resourceGroup --target-fqdns api.my-ip.io --source-addresses 10.0.1.0/24 --priority 200 --action Allow
+
+
+
+# Create App Service Plan and App
+az appservice plan create --name appserviceplan01 --resource-group $resourceGroup --sku B1 --location eastus
+az webapp create -g $resourceGroup -p appserviceplan01 -n $webappname --runtime 'ASPNET:V4.8'
+
+
+
+
