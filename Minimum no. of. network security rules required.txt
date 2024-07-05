@@ -1,0 +1,27 @@
+$resourceGroup = 'rg-dev-01'
+
+# Create a Resource Group
+az group create --name $resourceGroup --location eastus
+
+
+# Create a VNet with 2 Subnets
+az network vnet create --name vnet01 --resource-group $resourceGroup --address-prefix 10.0.0.0/16 --subnet-name subnet01 --subnet-prefixes 10.0.0.0/24 --location eastus
+az network vnet subnet create -g $resourceGroup --vnet-name vnet01 -n subnet02 --address-prefixes 10.0.1.0/24
+
+
+# Create 3 Public IPs
+az network public-ip create --resource-group $resourceGroup --name publicip01 --version IPv4 --sku Standard
+az network public-ip create --resource-group $resourceGroup --name publicip02 --version IPv4 --sku Standard
+az network public-ip create --resource-group $resourceGroup --name publicip03 --version IPv4 --sku Standard
+
+
+# Create 3 NICs for 3 VMs
+az network nic create --resource-group rg-dev-01 --name nic01 --vnet-name vnet01 --subnet subnet01 --public-ip-address publicip01
+az network nic create --resource-group rg-dev-01 --name nic02 --vnet-name vnet01 --subnet subnet01 --public-ip-address publicip02
+az network nic create --resource-group rg-dev-01 --name nic03 --vnet-name vnet01 --subnet subnet02 --public-ip-address publicip03
+
+
+# Create 3 VMs.
+az vm create --resource-group $resourceGroup --admin-username testuser --authentication-type password --name vm01 --image Win2022Datacenter --nics nic01
+az vm create --resource-group $resourceGroup --admin-username testuser --authentication-type password --name vm02 --image Win2022Datacenter --nics nic02
+az vm create --resource-group $resourceGroup --admin-username testuser --authentication-type password --name vm03 --image Win2022Datacenter --nics nic03
