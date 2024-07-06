@@ -1,0 +1,19 @@
+$resourceGroup1 = 'rg-dev-01'
+$resourceGroup2 = 'rg-dev-02'
+$resourceGroup3 = 'rg-dev-03'
+$vmname='vm01'
+$username="azureuser"
+
+
+# Create 3 Resource Groups
+az group create --name $resourceGroup1 --location eastus
+az group create --name $resourceGroup2 --location 'South Central US'
+az group create --name $resourceGroup3 --location 'West US 2'
+
+
+# Create Azure VNet
+az network vnet create --name vnet01 --resource-group $resourceGroup1 --address-prefix 10.0.0.0/16 --subnet-name subnet01 --subnet-prefixes 10.0.0.0/24 --location eastus
+
+
+# Create Azure VM
+az vm create --resource-group $resourcegroup1 --name $vmname --image Win2022AzureEditionCore --public-ip-sku Standard --admin-username $username --location eastus --vnet-name vnet01 --subnet subnet01
