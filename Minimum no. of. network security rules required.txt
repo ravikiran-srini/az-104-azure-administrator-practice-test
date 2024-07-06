@@ -16,12 +16,16 @@ az network public-ip create --resource-group $resourceGroup --name publicip03 --
 
 
 # Create 3 NICs for 3 VMs
-az network nic create --resource-group rg-dev-01 --name nic01 --vnet-name vnet01 --subnet subnet01 --public-ip-address publicip01
-az network nic create --resource-group rg-dev-01 --name nic02 --vnet-name vnet01 --subnet subnet01 --public-ip-address publicip02
-az network nic create --resource-group rg-dev-01 --name nic03 --vnet-name vnet01 --subnet subnet02 --public-ip-address publicip03
+az network nic create --resource-group $resourceGroup --name nic01 --vnet-name vnet01 --subnet subnet01 --public-ip-address publicip01
+az network nic create --resource-group $resourceGroup --name nic02 --vnet-name vnet01 --subnet subnet01 --public-ip-address publicip02
+az network nic create --resource-group $resourceGroup --name nic03 --vnet-name vnet01 --subnet subnet02 --public-ip-address publicip03
 
 
-# Create 3 VMs.
+# Create 3 VMs
 az vm create --resource-group $resourceGroup --admin-username testuser --authentication-type password --name vm01 --image Win2022Datacenter --nics nic01
 az vm create --resource-group $resourceGroup --admin-username testuser --authentication-type password --name vm02 --image Win2022Datacenter --nics nic02
 az vm create --resource-group $resourceGroup --admin-username testuser --authentication-type password --name vm03 --image Win2022Datacenter --nics nic03
+
+
+# Create an NSG
+az network nsg create -g $resourceGroup -n nsg01
