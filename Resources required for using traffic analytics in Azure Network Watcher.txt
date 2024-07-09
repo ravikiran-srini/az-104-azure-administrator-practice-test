@@ -1,0 +1,23 @@
+$resourceGroup = 'rg-dev-01'
+$random = (New-Guid).ToString().Substring(0,6)
+$storageaccountname = 'str' + $random
+
+
+# Create a Resource Group
+az group create --name $resourceGroup --location eastus
+
+
+# Create a VNet
+az network vnet create --name vnet01 --resource-group $resourceGroup --address-prefix 10.0.0.0/16 --subnet-name AzureFirewallSubnet --subnet-prefix 10.0.0.0/26 --location eastus
+
+
+# Create NSG
+az network nsg create --name nsg01 --resource-group $resourceGroup
+
+
+# Create Storage Account
+az storage account create --name $storageaccountname --resource-group $resourceGroup
+
+
+# Create Log Analytics Workspace
+az monitor log-analytics workspace create -g $resourceGroup -n ws01
