@@ -1,0 +1,33 @@
+$resourceGroup = 'rg-dev-01'
+
+
+# Create a Resource Group
+az group create --name $resourceGroup --location eastus
+
+
+# Create 2 NSGs
+az network nsg create --name subnet-nsg --resource-group $resourceGroup
+az network nsg create --name nic-nsg --resource-group $resourceGroup
+
+
+# Create a VNet with 2 subnets
+az network vnet create --name vnet01 --resource-group $resourceGroup --address-prefix 10.0.0.0/16 --subnet-name subnet01 --subnet-prefixes 10.0.1.0/24
+az network vnet subnet create --name subnet02 --address-prefixes 10.0.2.0/24 --resource-group $resourceGroup --vnet-name vnet01 --network-security-group subnet-nsg
+
+
+# Create 2 NICs
+az network nic create --name nic01 --resource-group $resourceGroup --vnet-name vnet01 --subnet subnet01
+az network nic create --name nic02 --resource-group $resourceGroup --vnet-name vnet01 --subnet subnet02
+
+
+# Create 2 VMs
+az vm create --resource-group $resourceGroup --admin-username azureuser --authentication-type password --name vm01 --image Win2022Datacenter --nics nic01
+az vm create --resource-group $resourceGroup --admin-username azureuser --authentication-type password --name vm02 --image Win2022Datacenter --nics nic02
+
+
+# Update the NIC to use the NSG
+az network nic update -g $resourceGroup -n nic02 --network-security-group nic-nsg
+
+
+# Create an NSG rule
+az network nsg rule create --name DenyTagRDPInbound --nsg-name nic-nsg --priority 100 --resource-group $resourceGroup --protocol TCP --destination-port-ranges 3389 --access Deny --source-address-prefixes 10.0.0.0/16 --direction Inbound
